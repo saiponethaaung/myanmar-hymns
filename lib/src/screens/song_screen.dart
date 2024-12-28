@@ -38,13 +38,24 @@ class _SongScreenState extends State<SongScreen> {
                 bottom: 50,
               ),
               child: Column(
-                children: song.content
-                    .split("\n")
-                    .map((s) => Text(
-                          s.trim(),
-                          style: TextStyle(fontSize: baseModel.textFontSize),
-                        ))
-                    .toList(),
+                children: [
+                  SelectableText.rich(
+                    TextSpan(
+                      children: song.content
+                          .split("\n")
+                          .map(
+                            (s) => TextSpan(
+                              text: s.trim() + "\n",
+                              style: TextStyle(
+                                fontSize: baseModel.textFontSize,
+                                height: 1.8,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
