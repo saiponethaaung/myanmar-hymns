@@ -37,10 +37,19 @@ class RoutesProvider extends StatelessWidget {
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromRGBO(255, 133, 27, 1),
-          titleTextStyle: TextStyle(color: Colors.white, fontSize: 22),
+          elevation: 1,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 21,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.3,
+          ),
           iconTheme: IconThemeData(color: Colors.white),
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromRGBO(255, 133, 27, 1),
+        ),
         useMaterial3: true,
         scaffoldBackgroundColor: const Color.fromRGBO(246, 239, 209, 1),
       ),
@@ -51,8 +60,8 @@ class RoutesProvider extends StatelessWidget {
             ),
         '/main': (context) => const MainScreen(),
         '/song-list': (context) => const SongListScreen(),
-        '/song': (context) => SongScreen(),
-        '/about': (context) => AboutScreen(),
+        '/song': (context) => const SongScreen(),
+        '/about': (context) => const AboutScreen(),
       },
     );
   }

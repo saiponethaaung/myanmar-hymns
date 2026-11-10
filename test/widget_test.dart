@@ -1,30 +1,52 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:myanmar_hymns/main.dart';
+import 'package:myanmar_hymns/src/dto/song_dto.dart';
+import 'package:myanmar_hymns/src/models/base_model.dart';
+import 'package:myanmar_hymns/src/widget/song_row_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('SongRowWidget displays song and toggles favorite',
+      (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final baseModel = BaseModel();
+    await baseModel.initData();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    final song = SongDTO('Test Hymn', 'hymn', 'Lyrics content');
+    baseModel.songs = [song];
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpWidget(
+      ChangeNotifierProvider<BaseModel>.value(
+        value: baseModel,
+        child: MaterialApp(
+          home: Scaffold(
+            body: SongRowWidget(song),
+          ),
+        ),
+      ),
+    );
+
+    // Initial state: outline heart
+    expect(find.text('Test Hymn'), findsOneWidget);
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+    expect(find.byIcon(Icons.favorite), findsNothing);
+
+    // Tap favorite button
+    await tester.tap(find.byIcon(Icons.favorite_border));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Now favorited: filled heart
+    expect(find.byIcon(Icons.favorite), findsOneWidget);
+    expect(find.byIcon(Icons.favorite_border), findsNothing);
+    expect(baseModel.isFavorite(song), isTrue);
+
+    // Tap again to unfavorite
+    await tester.tap(find.byIcon(Icons.favorite));
+    await tester.pump();
+
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+    expect(find.byIcon(Icons.favorite), findsNothing);
+    expect(baseModel.isFavorite(song), isFalse);
   });
 }

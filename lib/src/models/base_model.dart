@@ -8,12 +8,39 @@ class BaseModel extends ChangeNotifier {
   String _type = "";
 
   List<SongDTO> _songs = [];
+  Set<String> _favoriteSongKeys = {};
 
   List<SongDTO> get songs => _songs;
 
   set songs(List<SongDTO> songs) {
     _songs = songs;
     notifyListeners();
+  }
+
+  Set<String> get favoriteSongKeys => _favoriteSongKeys;
+
+  List<SongDTO> get favoriteSongs =>
+      _songs.where((song) => isFavorite(song)).toList();
+
+  bool isFavorite(SongDTO song) {
+    return _favoriteSongKeys.contains(song.key) ||
+        _favoriteSongKeys.contains(song.title);
+  }
+
+  Future<void> toggleFavorite(SongDTO song) async {
+    if (isFavorite(song)) {
+      _favoriteSongKeys.remove(song.key);
+      _favoriteSongKeys.remove(song.title);
+    } else {
+      _favoriteSongKeys.add(song.key);
+    }
+    notifyListeners();
+    await _saveFavorites();
+  }
+
+  Future<void> _saveFavorites() async {
+    _sh = await SharedPreferences.getInstance();
+    await _sh.setStringList('favoriteSongs', _favoriteSongKeys.toList());
   }
 
   double get fontScale => _fontScale;
@@ -33,13 +60,20 @@ class BaseModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  initData() async {
+  Future<void> initData() async {
     _sh = await SharedPreferences.getInstance();
 
     double? scale = _sh.getDouble('fontScale');
 
     if (scale != null) {
-      fontScale = scale;
+      _fontScale = scale;
     }
+
+    List<String>? favs = _sh.getStringList('favoriteSongs');
+    if (favs != null) {
+      _favoriteSongKeys = favs.toSet();
+    }
+
+    notifyListeners();
   }
 }

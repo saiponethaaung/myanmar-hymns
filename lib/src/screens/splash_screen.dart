@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:myanmar_hymns/src/dto/song_dto.dart';
 import 'package:myanmar_hymns/src/models/base_model.dart';
 import 'package:myanmar_hymns/src/widget/main_screen_widget.dart';
-import 'package:myanmar_hymns/src/widget/song_row_widget.dart';
-import 'package:myanmar_hymns/src/widget/zoom_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:xml/xml.dart';
 
@@ -59,7 +57,9 @@ class _SplashScreenState extends State<SplashScreen> {
       );
     }
 
-    Navigator.pushReplacementNamed(context, '/main');
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/main');
+    }
   }
 
   @override
@@ -80,6 +80,5 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
-    ;
   }
 }
